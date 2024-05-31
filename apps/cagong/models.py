@@ -25,7 +25,11 @@ class Cafe(models.Model):
     )  # 지역과 1:N 관계
     addr = models.CharField(max_length=200)
     kagong = models.BooleanField(default=False)  # 가공 여부
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+    )
     lat = models.CharField(max_length=50)
     lng = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
