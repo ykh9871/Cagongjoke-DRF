@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Region, Cafe, Review, CafeLike, ReviewLike
-from users.serializers import UserSerializer
+from apps.cafes.models import Region, Cafe, Review, CafeLike, ReviewLike
+from apps.users.serializers import UserSerializer
 
 
 class RegionSerializer(serializers.ModelSerializer):
