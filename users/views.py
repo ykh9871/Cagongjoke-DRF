@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render, get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from cagongjoke.settings import (
+from config.settings import (
     SECRET_KEY,
     SOCIAL_AUTH_GOOGLE_CLIENT_ID,
     SOCIAL_AUTH_GOOGLE_SECRET,
