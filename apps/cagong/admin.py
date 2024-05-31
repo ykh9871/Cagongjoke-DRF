@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.cafes.models import (
+from apps.cagong.models import (
     Region,
     Cafe,
     Review,

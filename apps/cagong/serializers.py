@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.cafes.models import Region, Cafe, Review, CafeLike, ReviewLike
+from apps.cagong.models import Region, Cafe, Review, CafeLike, ReviewLike
 from apps.users.serializers import UserSerializer
 
 

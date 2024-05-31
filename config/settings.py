@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     # 생성한 앱
     "apps.users",
-    "apps.cafes",
+    "apps.cagong",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -188,7 +188,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "cagongjoke.sqlite3",
+        "NAME": BASE_DIR / "cagong.sqlite3",
     }
 }
 
