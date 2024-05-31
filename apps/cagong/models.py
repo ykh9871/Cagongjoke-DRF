@@ -15,6 +15,8 @@ class Region(models.Model):
 
 
 class Cafe(models.Model):
+    id = models.IntegerField(primary_key=True)
+    crawl_id = models.CharField(null=True, max_length=20)
     name = models.CharField(max_length=100)
     wordcloud_data = models.TextField(null=True, blank=True)
     area = models.ForeignKey(
