@@ -23,11 +23,11 @@ class Cafe(models.Model):
     area = models.ForeignKey(
         Region, on_delete=models.CASCADE, related_name="cafes"
     )  # 지역과 1:N 관계
-    address = models.CharField(max_length=200)
+    addr = models.CharField(max_length=200)
     kagong = models.BooleanField(default=False)  # 가공 여부
-    phonenum = models.CharField(max_length=20)
-    latitude = models.CharField(max_length=50)
-    longitude = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20)
+    lat = models.CharField(max_length=50)
+    lng = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
