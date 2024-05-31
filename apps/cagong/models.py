@@ -10,6 +10,8 @@ class Region(models.Model):
     county_name = models.CharField(max_length=100)
     town_code = models.IntegerField()
     town_name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True)
 
 
 class Cafe(models.Model):
