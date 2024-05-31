@@ -11,9 +11,14 @@ class Region(models.Model):
     town_code = models.IntegerField()
     town_name = models.CharField(max_length=100)
 
+    class Meta:
+        db_table = "region"
+        managed = True
+
 
 class Cafe(models.Model):
     name = models.CharField(max_length=100)
+    wordcloud_data = models.TextField(null=True, blank=True)
     area = models.ForeignKey(
         Region, on_delete=models.CASCADE, related_name="cafes"
     )  # 지역과 1:N 관계
@@ -25,6 +30,10 @@ class Cafe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "cafe"
+        managed = True
 
 
 class Review(models.Model):
@@ -40,6 +49,10 @@ class Review(models.Model):
     modified_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        db_table = "review"
+        managed = True
+
 
 class CafeLike(models.Model):
     cafe = models.ForeignKey(
@@ -50,6 +63,10 @@ class CafeLike(models.Model):
     )  # 사용자와 N:N 관계
     liked_at = models.DateTimeField(auto_now_add=True)  # 좋아요 시간 기록
 
+    class Meta:
+        db_table = "cafe_like"
+        managed = True
+
 
 class ReviewLike(models.Model):
     review = models.ForeignKey(
@@ -59,3 +76,7 @@ class ReviewLike(models.Model):
         User, on_delete=models.CASCADE, related_name="review_likes"
     )  # 사용자와 N:N 관계
     liked_at = models.DateTimeField(auto_now_add=True)  # 좋아요 시간 기록
+
+    class Meta:
+        db_table = "review_like"
+        managed = True
