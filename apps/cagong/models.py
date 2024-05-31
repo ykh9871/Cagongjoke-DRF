@@ -29,11 +29,8 @@ class Cafe(models.Model):
     latitude = models.CharField(max_length=50)
     longitude = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        managed = True
 
 
 class Review(models.Model):
@@ -46,7 +43,7 @@ class Review(models.Model):
     review = models.TextField()
     crawling = models.BooleanField(default=False)  # 크롤링 여부
     created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
 
