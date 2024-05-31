@@ -19,7 +19,7 @@ class Cafe(models.Model):
     crawl_id = models.CharField(null=True, max_length=20)
     is_crawled = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
-    wordcloud_data = models.TextField(null=True, blank=True)
+    wordcloud = models.TextField(null=True, blank=True)
     area = models.ForeignKey(
         Region, on_delete=models.CASCADE, related_name="cafes"
     )  # 지역과 1:N 관계
