@@ -53,8 +53,8 @@ INSTALLED_APPS = [
     # provider
     "allauth.socialaccount.providers.google",
     # 생성한 앱
-    "users",
-    "cafes",
+    "apps.users",
+    "apps.cafes",
 ]
 
 AUTH_USER_MODEL = "users.User"

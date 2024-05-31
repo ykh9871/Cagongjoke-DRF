@@ -19,15 +19,14 @@ from config.settings import (
 )
 from django.shortcuts import redirect
 
-from .serializers import UserSerializer
-from .models import User
+from apps.users.serializers import UserSerializer
+from apps.users.models import *
 
 from json import JSONDecodeError
 from django.http import JsonResponse
 import requests
 import os
 from rest_framework import status
-from .models import *
 from allauth.socialaccount.models import SocialAccount, SocialToken, SocialApp
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
