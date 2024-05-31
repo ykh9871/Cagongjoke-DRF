@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -7,8 +6,12 @@ from django.contrib.auth.models import (
 )
 
 
+# 헬퍼 클래스
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
+        """
+        주어진 이메일, 비밀번호 등 개인정보로 User 인스턴스 생성
+        """
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
@@ -18,30 +21,33 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        try:
-            extra_fields.setdefault("is_staff", True)
-            extra_fields.setdefault("is_superuser", True)
-        except:
-            raise ValueError("Superuser must have an occupation")
-
+        """
+        주어진 이메일, 비밀번호 등 개인정보로 User 인스턴스 생성
+        단, 최상위 사용자이므로 권한을 부여
+        """
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True)
-    nickname = models.CharField(max_length=50, unique=True)
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-    refresh_token = models.CharField(max_length=255, default=None, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_social = models.BooleanField(default=False)
 
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "nickname"]
+    REQUIRED_FIELDS = ["username"]
+
+    class Meta:
+        managed = True
+        db_table = "user"
 
     def __str__(self):
         return self.email
