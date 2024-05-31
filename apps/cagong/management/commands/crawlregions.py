@@ -1,15 +1,19 @@
-from django.core.management.base import BaseCommand
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+
+from django.db import transaction
+from django.core.management.base import BaseCommand
 from apps.cagong.models import Region
 
 import logging
-import datetime
+
+from datetime import datetime
 import time
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -21,6 +25,7 @@ class Command(BaseCommand):
     help = "crawl regions"
 
     def extract(self):
+        logger.info(f"#### Start to extract data")
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # 헤드리스 모드로 실행
         chrome_options.add_argument("--no-sandbox")
@@ -46,8 +51,8 @@ class Command(BaseCommand):
             for county_idx, county_element in enumerate(county_elements.options):
 
                 if city_name == "세종특별자치시":
-                    county_code = None
-                    county_name = None
+                    county_code = "999"
+                    county_name = ""
                 else:
                     county_code = county_element.get_attribute("value")
                     if not county_code:
@@ -71,8 +76,39 @@ class Command(BaseCommand):
                         "town_name": town_name,
                     }
                     rows.append(row)
+        logger.info(f"#### Success to extract data")
         return rows
+
+    def process(self, data):
+        logger.info("#### Start to process data")
+        df = pd.DataFrame(data)
+        df["id"] = df["city_code"] + df["county_code"] + df["town_code"]
+        logger.info("#### Success to process data")
+        return df
+
+    def load(self, df):
+        logger.info(f"#### Start to load..")
+        with transaction.atomic():
+            for _, row in df.iterrows():
+                obj, created = Region.objects.update_or_create(
+                    id=row["id"],
+                    defaults={
+                        "city_code": row["city_code"],
+                        "city_name": row["city_name"],
+                        "county_code": row["county_code"],
+                        "county_name": row["county_name"],
+                        "town_code": row["town_code"],
+                        "town_name": row["town_name"],
+                        "updated_at": datetime.now(),
+                    },
+                )
+                if created:
+                    logger.info(f"Created: {obj}")
+                else:
+                    logger.info(f"Updated: {obj}")
+        logger.info(f"#### Success to load data to region table")
 
     def handle(self, **options):
         data = self.extract()
-        print(data)
+        df = self.process(data)
+        self.load(df)
