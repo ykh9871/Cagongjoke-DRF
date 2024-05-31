@@ -45,10 +45,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
-    class Meta:
-        managed = True
-        db_table = "user"
-
     def __str__(self):
         return self.email
 
