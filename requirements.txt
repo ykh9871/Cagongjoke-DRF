@@ -33,3 +33,4 @@ selenium==4.21.0
 webdriver-manager==4.0.1
 pandas==2.2.0
 beautifulsoup4==4.12.3
+ipython==8.18.1
