@@ -1,8 +1,9 @@
 from django.db import models
 from apps.users.models import User
+from common.models import SoftDeleteModel
 
 
-class Area(models.Model):
+class Area(SoftDeleteModel):
     id = models.IntegerField(primary_key=True)  # 지역 코드를 기본 키로 사용
     city_code = models.IntegerField()
     city_name = models.CharField(max_length=100)
@@ -11,10 +12,9 @@ class Area(models.Model):
     town_code = models.IntegerField()
     town_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True)
 
 
-class Cafe(models.Model):
+class Cafe(SoftDeleteModel):
     crawl_id = models.CharField(unique=True, null=True, max_length=20)
     is_crawled = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
@@ -32,11 +32,9 @@ class Cafe(models.Model):
     lat = models.CharField(max_length=50)
     lng = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
 
 
-class Review(models.Model):
+class Review(SoftDeleteModel):
     user = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, related_name="reviews"
     )  # 사용자와 1:N 관계
@@ -46,8 +44,6 @@ class Review(models.Model):
     review = models.TextField()
     crawling = models.BooleanField(default=False)  # 크롤링 여부
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
 
 
 class CafeLike(models.Model):
