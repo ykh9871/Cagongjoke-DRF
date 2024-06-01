@@ -34,4 +34,4 @@
 
 ## Docs
 - DB Schema
-  - https://docs.google.com/spreadsheets/d/1EEiiEO7KGeMH0MVtWZn8n6Bga3IoATPCZ8WUFlflurA/edit#gid=0
+  - [DB Schema Google Docs Link](https://docs.google.com/spreadsheets/d/1EEiiEO7KGeMH0MVtWZn8n6Bga3IoATPCZ8WUFlflurA/edit#gid=0)
