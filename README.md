@@ -30,3 +30,8 @@
 |   Docs    |                  문서를 수정한 경우                   |
 |  Rename   |  파일 혹은 폴더명을 수정하거나 옮기는 작업만인 경우   |
 |  Remove   |          파일을 삭제하는 작업만 수행한 경우           |
+
+
+## Docs
+- DB Schema
+  - https://docs.google.com/spreadsheets/d/1EEiiEO7KGeMH0MVtWZn8n6Bga3IoATPCZ8WUFlflurA/edit#gid=0
