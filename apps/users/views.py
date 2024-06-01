@@ -1,5 +1,6 @@
 import datetime
 import jwt
+from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.views import APIView
@@ -19,7 +20,7 @@ from config.settings import (
 )
 from django.shortcuts import redirect
 
-from apps.users.serializers import UserSerializer
+from apps.users.serializers import *
 from apps.users.models import *
 
 from json import JSONDecodeError
@@ -27,10 +28,8 @@ from django.http import JsonResponse
 import requests
 import os
 from rest_framework import status
+from django.contrib.auth.hashers import make_password
 from allauth.socialaccount.models import SocialAccount, SocialToken, SocialApp
-from dj_rest_auth.registration.views import SocialLoginView
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from allauth.socialaccount.providers.google import views as google_view
 
 
 state = os.environ.get("STATE")
@@ -166,8 +165,11 @@ class SignupAPIView(APIView):
                 "password": openapi.Schema(
                     type=openapi.TYPE_STRING, description="비밀번호"
                 ),
+                "password_confirm": openapi.Schema(
+                    type=openapi.TYPE_STRING, description="비밀번호 확인"
+                ),
             },
-            required=["username", "email", "password"],
+            required=["username", "email", "password", "password_confirm"],
         ),
         responses={
             201: openapi.Response(
@@ -176,7 +178,17 @@ class SignupAPIView(APIView):
                     "application/json": {"message": "User registered successfully"}
                 },
             ),
-            400: openapi.Response(description="Invalid input"),
+            400: openapi.Response(
+                description="Invalid input",
+                examples={
+                    "application/json": {
+                        "errors": {
+                            "email": ["A user with this email already exists."],
+                            "password": ["Passwords do not match."],
+                        }
+                    }
+                },
+            ),
         },
     )
     def post(self, request):
@@ -187,7 +199,9 @@ class SignupAPIView(APIView):
                 {"message": "User registered successfully"},
                 status=status.HTTP_201_CREATED,
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # 에러 메시지를 포맷하여 반환
+        error_messages = serializer.errors
+        return Response({"errors": error_messages}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AuthAPIView(APIView):
@@ -200,8 +214,8 @@ class AuthAPIView(APIView):
                 description="User information retrieved successfully",
                 schema=UserSerializer,
             ),
-            400: "Invalid token",
-            401: "Unauthorized",
+            400: openapi.Response(description="Invalid token"),
+            401: openapi.Response(description="Unauthorized"),
         },
     )
     def get(self, request):
@@ -320,3 +334,81 @@ class AuthAPIView(APIView):
         response.delete_cookie("access")
         response.delete_cookie("refresh")
         return response
+
+
+class WithdrawalViewAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="회원 탈퇴",
+        operation_description="사용자의 비밀번호를 확인한 후 회원 탈퇴를 수행합니다.",
+        request_body=WithdrawalSerializer,
+        responses={
+            204: "No Content",
+            400: "Bad Request",
+            401: "Unauthorized - Incorrect password",
+        },
+    )
+    def delete(self, request):
+        user = request.user
+        serializer = WithdrawalSerializer(data=request.data)
+        if serializer.is_valid():
+            if not user.check_password(serializer.data.get("password")):
+                return Response(
+                    {"password": ["Incorrect password."]},
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="비밀번호 변경",
+        operation_description="사용자의 비밀번호를 변경합니다.",
+        request_body=ChangePasswordSerializer,
+        responses={
+            200: "Password updated successfully",
+            400: "Bad Request",
+        },
+    )
+    def post(self, request):
+        user = request.user
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            if not user.check_password(serializer.data.get("current_password")):
+                return Response(
+                    {"current_password": ["Current password is incorrect."]},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user.password = make_password(serializer.data.get("new_password"))
+            user.save()
+
+            return Response(
+                {"message": "Password updated successfully"}, status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="회원 정보 변경",
+        operation_description="사용자의 정보를 변경합니다.",
+        request_body=UpdateUserSerializer,
+        responses={
+            200: "User information updated successfully",
+            400: "Bad Request",
+        },
+    )
+    def patch(self, request):
+        user = request.user
+        serializer = UpdateUserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
