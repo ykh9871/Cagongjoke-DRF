@@ -4,10 +4,11 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from common.models import SoftDeleteManager, SoftDeleteModel
 
 
 # 헬퍼 클래스
-class UserManager(BaseUserManager):
+class UserManager(BaseUserManager, SoftDeleteManager):
     def create_user(self, email, password=None, **extra_fields):
         """
         주어진 이메일, 비밀번호 등 개인정보로 User 인스턴스 생성
@@ -30,17 +31,15 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, SoftDeleteModel):
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(null=True, blank=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_social = models.BooleanField(default=False)
 
-    objects = UserManager()
+    objects = UserManager()  # 기본 매니저 교체
+    all_objects = models.Manager()  # 기본 매니저 유지
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
