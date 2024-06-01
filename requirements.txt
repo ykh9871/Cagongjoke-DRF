@@ -32,3 +32,4 @@ wheel==0.41.2
 pandas==2.2.0
 beautifulsoup4==4.12.3
 lxml==5.2.2
+ipython==8.18.1
