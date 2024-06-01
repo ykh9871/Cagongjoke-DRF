@@ -439,11 +439,16 @@ class UpdateUserAPIView(APIView):
 
 
 class RestoreAccountAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
     @swagger_auto_schema(
         operation_summary="계정 복구",
         operation_description="비활성화된 계정을 복구합니다.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "email": openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+            },
+            required=["email"],
+        ),
         responses={
             200: openapi.Response(
                 description="Account restored successfully",
@@ -461,17 +466,32 @@ class RestoreAccountAPIView(APIView):
                     }
                 },
             ),
+            404: openapi.Response(
+                description="Account not found",
+                examples={
+                    "application/json": {
+                        "detail": "Account not found.",
+                    }
+                },
+            ),
         },
     )
     def post(self, request):
-        user = request.user
-        if user.is_active:
+        email = request.data.get("email")
+        try:
+            user = User.objects.get(email=email)
+            if user.is_active:
+                return Response(
+                    {"detail": "Account is already active."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user.restore()
             return Response(
-                {"detail": "Account is already active."},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"detail": "Account restored successfully."},
+                status=status.HTTP_200_OK,
             )
-        user.restore()
-        return Response(
-            {"detail": "Account restored successfully."},
-            status=status.HTTP_200_OK,
-        )
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Account not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
