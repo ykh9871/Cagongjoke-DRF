@@ -2,7 +2,7 @@ from django.db import models
 from apps.users.models import User
 
 
-class Region(models.Model):
+class Area(models.Model):
     id = models.IntegerField(primary_key=True)  # 지역 코드를 기본 키로 사용
     city_code = models.IntegerField()
     city_name = models.CharField(max_length=100)
@@ -21,7 +21,7 @@ class Cafe(models.Model):
     name = models.CharField(max_length=100)
     wordcloud = models.TextField(null=True, blank=True)
     area = models.ForeignKey(
-        Region, on_delete=models.CASCADE, related_name="cafes"
+        Area, on_delete=models.CASCADE, related_name="cafes"
     )  # 지역과 1:N 관계
     addr = models.CharField(max_length=200)
     kagong = models.BooleanField(default=False)  # 가공 여부
