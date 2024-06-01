@@ -1,16 +1,16 @@
 from rest_framework import serializers
-from apps.cagong.models import Region, Cafe, Review, CafeLike, ReviewLike
+from apps.cagong.models import Area, Cafe, Review, CafeLike, ReviewLike
 from apps.users.serializers import UserSerializer
 
 
-class RegionSerializer(serializers.ModelSerializer):
+class AreaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Region
+        model = Area
         fields = "__all__"
 
 
 class CafeSerializer(serializers.ModelSerializer):
-    area = RegionSerializer(read_only=True)
+    area = AreaSerializer(read_only=True)
     reviews = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:

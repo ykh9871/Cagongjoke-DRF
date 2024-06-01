@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.core.management.base import BaseCommand
-from apps.cagong.models import Region, Cafe
+from apps.cagong.models import Area, Cafe
 import requests
 import logging
 
@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
 class Command(BaseCommand):
-    help = "crawl regions"
+    help = "crawl cafes"
 
     def fetch(self, area, page, size):
         url = "https://im.diningcode.com/API/isearch/"
@@ -45,7 +45,7 @@ class Command(BaseCommand):
     def extract(self):
         logger.info(f"#### Start to extract data")
         rows = list()
-        regions = Region.objects.values(
+        regions = Area.objects.values(
             "id",
             "city_name",
             "county_name",
