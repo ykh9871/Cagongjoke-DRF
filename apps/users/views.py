@@ -280,7 +280,23 @@ class AuthAPIView(APIView):
                     }
                 },
             ),
-            400: openapi.Response(description="Incorrect email or password"),
+            400: openapi.Response(
+                description="Incorrect email or password",
+                examples={
+                    "application/json": {
+                        "detail": "Incorrect email or password",
+                    }
+                },
+            ),
+            403: openapi.Response(
+                description="Inactive account",
+                examples={
+                    "application/json": {
+                        "detail": "This account is inactive. Would you like to restore it?",
+                        "restore": True,
+                    }
+                },
+            ),
         },
     )
     def post(self, request):
@@ -290,6 +306,14 @@ class AuthAPIView(APIView):
         )
         # 이미 회원가입 된 유저일 때
         if user is not None:
+            if not user.is_active:
+                return Response(
+                    {
+                        "detail": "This account is inactive. Would you like to restore it?",
+                        "restore": True,
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
             serializer = UserSerializer(user)
             # jwt 토큰 접근
             token = TokenObtainPairSerializer.get_token(user)
@@ -412,3 +436,42 @@ class UpdateUserAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RestoreAccountAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="계정 복구",
+        operation_description="비활성화된 계정을 복구합니다.",
+        responses={
+            200: openapi.Response(
+                description="Account restored successfully",
+                examples={
+                    "application/json": {
+                        "detail": "Account restored successfully.",
+                    }
+                },
+            ),
+            400: openapi.Response(
+                description="Account is already active",
+                examples={
+                    "application/json": {
+                        "detail": "Account is already active.",
+                    }
+                },
+            ),
+        },
+    )
+    def post(self, request):
+        user = request.user
+        if user.is_active:
+            return Response(
+                {"detail": "Account is already active."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        user.restore()
+        return Response(
+            {"detail": "Account restored successfully."},
+            status=status.HTTP_200_OK,
+        )

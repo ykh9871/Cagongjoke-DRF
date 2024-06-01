@@ -5,6 +5,7 @@ from .views import (
     WithdrawalViewAPIView,
     ChangePasswordAPIView,
     UpdateUserAPIView,
+    RestoreAccountAPIView,
     google_login,
     google_callback,
 )
@@ -23,6 +24,8 @@ urlpatterns = [
     path("changePassword/", ChangePasswordAPIView.as_view(), name="changePassword"),
     # patch - 회원정보 변경
     path("updateUser/", UpdateUserAPIView.as_view(), name="updateUser"),
+    # post - 회원 복구
+    path("restore-account/", RestoreAccountAPIView.as_view(), name="restore-account"),
     # jwt 토큰 재발급
     path("auth/refresh/", TokenRefreshView.as_view(), name="reissueToken"),
     # 구글 소셜로그인
