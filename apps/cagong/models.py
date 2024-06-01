@@ -16,7 +16,7 @@ class Region(models.Model):
 
 class Cafe(models.Model):
     id = models.IntegerField(primary_key=True)
-    crawl_id = models.CharField(null=True, max_length=20)
+    crawl_id = models.CharField(unique=True, null=True, max_length=20)
     is_crawled = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
     wordcloud = models.TextField(null=True, blank=True)
