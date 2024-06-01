@@ -38,12 +38,6 @@ BASE_URL = "http://localhost:8000/"
 GOOGLE_CALLBACK_URI = BASE_URL + "api/user/google/callback/"
 
 
-class GoogleLogin(SocialLoginView):
-    adapter_class = google_view.GoogleOAuth2Adapter
-    callback_url = GOOGLE_CALLBACK_URI
-    client_class = OAuth2Client
-
-
 def google_login(request):
     scope = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
     client_id = SOCIAL_AUTH_GOOGLE_CLIENT_ID
@@ -91,34 +85,38 @@ def google_callback(request):
 
     email = user_info.get("email")
 
-    try:
-        user = User.objects.get(email=email)
+    def create_response(user, message):
+        serializer = UserSerializer(user)
         token = TokenObtainPairSerializer.get_token(user)
         access_token = str(token.access_token)
         refresh_token = str(token)
 
-        if user.is_active:
-            user.last_login = timezone.now()
-            user.save()
+        user.last_login = timezone.now()
+        user.save()
 
-            response = JsonResponse(
-                {
-                    "user": {
-                        "email": user.email,
-                        "username": user.username,
-                    },
-                    "message": "login success",
+        response = JsonResponse(
+            {
+                "user": serializer.data,
+                "message": message,
+                "token": {
+                    "access": access_token,
+                    "refresh": refresh_token,
                 },
-                status=status.HTTP_200_OK,
-            )
+            },
+            status=status.HTTP_200_OK,
+        )
 
-            # Access 토큰 쿠키 설정
-            response.set_cookie("access_token", access_token, httponly=True)
+        # Access 토큰 쿠키 설정
+        response.set_cookie("access_token", access_token, httponly=True)
+        # Refresh 토큰 쿠키 설정
+        response.set_cookie("refresh_token", refresh_token, httponly=True)
 
-            # Refresh 토큰 쿠키 설정
-            response.set_cookie("refresh_token", refresh_token, httponly=True)
+        return response
 
-            return response
+    try:
+        user = User.objects.get(email=email)
+        if user.is_active:
+            return create_response(user, "login success")
         else:
             raise Exception("Signup Required")
     except User.DoesNotExist:
@@ -131,13 +129,13 @@ def google_callback(request):
         social_account = SocialAccount.objects.create(
             user=user,
             provider="google",
-            uid=email,
+            uid=user_info.get("id"),
             extra_data=user_info,  # 추가된 사용자 정보 저장
         )
 
         social_app = SocialApp.objects.get(provider="google")
 
-        social_token = SocialToken.objects.create(
+        SocialToken.objects.create(
             account=social_account,
             token=google_access_token,
             token_secret=google_refresh_token if google_refresh_token else "",
@@ -145,15 +143,8 @@ def google_callback(request):
             app=social_app,
         )
 
-        response = JsonResponse(
-            {
-                "message": "Signup Required",
-                "email": email,
-            },
-            status=status.HTTP_202_ACCEPTED,
-        )
-
-        return response
+        # 회원가입 후 로그인 처리
+        return create_response(user, "login success")
     except Exception as e:
         return JsonResponse(
             {"status": 400, "message": str(e)},
