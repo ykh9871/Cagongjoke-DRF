@@ -1,0 +1,30 @@
+#!/bin/sh
+COMMAND=$1
+MYSQL_DATABASE="gisp"
+MYSQL_USER="cagong"
+MYSQL_PASSWORD="cagong!@#"
+SQL_FILE1="tmp/cagong_area_202406030015.sql"
+SQL_FILE2="tmp/cagong_cafe_202406030015.sql"
+
+case $COMMAND in
+  makemigrations)
+    docker-compose exec django python manage.py makemigrations
+    ;;
+  migrate)
+    docker-compose exec django python manage.py migrate
+    ;;
+  shell)
+    docker-compose exec django python manage.py shell
+    ;;
+  load-dataset)
+    docker cp $SQL_FILE1 mysql:/$SQL_FILE1
+    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' $MYSQL_DATABASE < $SQL_FILE1"
+    docker cp $SQL_FILE2 mysql:/$SQL_FILE2
+    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' $MYSQL_DATABASE < $SQL_FILE2"
+    docker-compose exec mysql sh -c "rm $SQL_FILE1 $SQL_FILE2"
+    ;;
+  *)
+    echo "Usage: $0 {migrate|makemigrations|shell|load-dataset}"
+    exit 1
+    ;;
+esac
