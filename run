@@ -3,8 +3,8 @@ COMMAND=$1
 MYSQL_DATABASE="gisp"
 MYSQL_USER="cagong"
 MYSQL_PASSWORD="cagong!@#"
-SQL_FILE1="tmp/cagong_area_202406030015.sql"
-SQL_FILE2="tmp/cagong_cafe_202406030015.sql"
+SQL_FILE1="tmp/cagong_area_202406030110.sql"
+SQL_FILE2="tmp/cagong_cafe_202406030110.sql"
 
 case $COMMAND in
   makemigrations)
@@ -18,9 +18,9 @@ case $COMMAND in
     ;;
   load-dataset)
     docker cp $SQL_FILE1 mysql:/$SQL_FILE1
-    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' $MYSQL_DATABASE < $SQL_FILE1"
+    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' --default-character-set=utf8 $MYSQL_DATABASE < $SQL_FILE1"
     docker cp $SQL_FILE2 mysql:/$SQL_FILE2
-    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' $MYSQL_DATABASE < $SQL_FILE2"
+    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' --default-character-set=utf8 $MYSQL_DATABASE < $SQL_FILE2"
     docker-compose exec mysql sh -c "rm $SQL_FILE1 $SQL_FILE2"
     ;;
   *)
