@@ -9,12 +9,10 @@ services:
     volumes:
       - ./mysql/data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: rltmqrhdrur@@1
-      MYSQL_DATABASE: gisp
-      MYSQL_USER: cagong
-      MYSQL_PASSWORD: cagong!@#
-      TZ: Asia/Seoul
+      TZ: ${TZ}
     healthcheck:
       test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD']
       interval: 10s
@@ -34,9 +32,5 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      DATABASE_HOST: mysql
-      DATABASE_PORT: 3306
-      DATABASE_NAME: gisp
-      DATABASE_USER: cagong
-      DATABASE_PASSWORD: cagong!@#
+    env_file:
+      - .env
