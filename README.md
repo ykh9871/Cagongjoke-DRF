@@ -18,6 +18,15 @@
   docker compose up -d
   ```
 
+3. 초기 로컬 세팅
+   
+  데이터베이스 스키마를 맞추고, 초기 데이터를 로드합니다.
+  ```
+  ./run migrate
+  ./run load-dataset
+  ```
+
+
 ## Git Convention
 
 | 태그 이름 |                         설명                          |
