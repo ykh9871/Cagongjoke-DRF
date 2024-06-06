@@ -15,4 +15,5 @@ urlpatterns = [
         name="town-name-list",
     ),
     path("areas/", AreaCreateAPIView.as_view(), name="area-create"),
+    path("areas/", AreaUpdateAPIView.as_view(), name="area-update"),
 ]
