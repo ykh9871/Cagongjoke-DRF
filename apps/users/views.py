@@ -123,6 +123,7 @@ def google_callback(request):
         username = user_info.get("name")
         user = User.objects.create(email=email, username=username)
         user.set_unusable_password()  # 비밀번호 없이 로그인할 것이므로 설정 불가로 처리
+        user.is_social = True
         user.save()
 
         social_account = SocialAccount.objects.create(
