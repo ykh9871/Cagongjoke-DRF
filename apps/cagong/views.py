@@ -97,3 +97,10 @@ class CafeListAPIView(APIView):
 
         serializer = CafeSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class CafeDetailAPIView(APIView):
+    def get(self, request, pk):
+        cafe = Cafe.objects.get(pk=pk)
+        serializer = CafeSerializer(cafe)
+        return Response(serializer.data)
