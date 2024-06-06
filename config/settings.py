@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     # 생성한 앱
     "apps.users",
     "apps.cagong",
+    "common",
 ]
 
 AUTH_USER_MODEL = "users.User"
