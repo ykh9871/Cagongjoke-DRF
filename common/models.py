@@ -63,5 +63,13 @@ class SoftDeleteModel(models.Model):
         self.updated_at = timezone.now()
         self.save()
 
+        # CASCADE 처리를 위해 연결된 객체도 복원 처리
+        for related_object in self._meta.related_objects:
+            related_manager = getattr(self, related_object.get_accessor_name(), None)
+            if related_manager:
+                related_manager.all().update(
+                    is_active=True, deleted_at=None, updated_at=timezone.now()
+                )
+
     def hard_delete(self, using=None, keep_parents=False):
         super(SoftDeleteModel, self).delete(using=using, keep_parents=keep_parents)
