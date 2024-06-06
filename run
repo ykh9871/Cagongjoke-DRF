@@ -1,8 +1,5 @@
 #!/bin/sh
 COMMAND=$1
-MYSQL_DATABASE="gisp"
-MYSQL_USER="cagong"
-MYSQL_PASSWORD="cagong!@#"
 SQL_FILE1="tmp/cagong_area_202406030110.sql"
 SQL_FILE2="tmp/cagong_cafe_202406030110.sql"
 
@@ -17,11 +14,11 @@ case $COMMAND in
     docker-compose exec django python manage.py shell
     ;;
   load-dataset)
-    docker cp $SQL_FILE1 mysql:/$SQL_FILE1
-    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' --default-character-set=utf8 $MYSQL_DATABASE < $SQL_FILE1"
-    docker cp $SQL_FILE2 mysql:/$SQL_FILE2
-    docker-compose exec mysql sh -c "exec mysql -u$MYSQL_USER -p'$MYSQL_PASSWORD' --default-character-set=utf8 $MYSQL_DATABASE < $SQL_FILE2"
-    docker-compose exec mysql sh -c "rm $SQL_FILE1 $SQL_FILE2"
+    docker cp $SQL_FILE1 postgres:/$SQL_FILE1
+    docker cp $SQL_FILE2 postgres:/$SQL_FILE2
+    docker-compose exec postgres sh -c "PGPASSWORD='$POSTGRES_PASSWORD' psql -U $POSTGRES_USER -d $POSTGRES_DB -f $SQL_FILE1"
+    docker-compose exec postgres sh -c "PGPASSWORD='$POSTGRES_PASSWORD' psql -U $POSTGRES_USER -d $POSTGRES_DB -f $SQL_FILE2"
+    docker-compose exec postgres sh -c "rm $SQL_FILE1 $SQL_FILE2"
     ;;
   *)
     echo "Usage: $0 {migrate|makemigrations|shell|load-dataset}"
