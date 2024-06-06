@@ -21,4 +21,27 @@ urlpatterns = [
     # /cafes/areas/?area_id=11&page=1 형태로 호출할 수 있습니다.
     path("cafes/areas/", CafeListAPIView.as_view(), name="cafe-list"),
     path("cafes/<int:pk>/", CafeDetailAPIView.as_view(), name="cafe-detail"),
+    path("cafes/", CafeCreateAPIView.as_view(), name="cafe-create"),
+    path("cafes/<int:pk>/", CafeUpdateAPIView.as_view(), name="cafe-update"),
+    path("cafes/<int:pk>/", CafeDeleteAPIView.as_view(), name="cafe-delete"),
+    path(
+        "cafes/<int:pk>/like-count/",
+        CafeLikeCountAPIView.as_view(),
+        name="cafe-like-count",
+    ),
+    path(
+        "cafes/<int:pk>/review-count/",
+        CafeReviewCountAPIView.as_view(),
+        name="cafe-review-count",
+    ),
+    path(
+        "cafes/<int:pk>/reviews/",
+        CafeReviewListAPIView.as_view(),
+        name="cafe-review-list",
+    ),
+    path(
+        "users/cafes/likes/",
+        UserLikedCafesAPIView.as_view(),
+        name="user-liked-cafes",
+    ),
 ]
