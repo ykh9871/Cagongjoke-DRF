@@ -35,8 +35,13 @@ urlpatterns = [
         name="cafe-review-count",
     ),
     path(
-        "cafes/<int:cafe_id>/reviews/",
+        "cafes/<int:pk>/reviews/",
         CafeReviewListAPIView.as_view(),
         name="cafe-review-list",
+    ),
+    path(
+        "users/cafes/likes/",
+        UserLikedCafesAPIView.as_view(),
+        name="user-liked-cafes",
     ),
 ]

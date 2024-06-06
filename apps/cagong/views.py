@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
+from apps.users.models import User
 from apps.cagong.models import Area, Cafe, Review, CafeLike, ReviewLike
 from apps.cagong.serializers import (
     AreaSerializer,
@@ -157,11 +158,31 @@ class CafeReviewCountAPIView(APIView):
 
 
 class CafeReviewListAPIView(APIView):
-    def get(self, request, cafe_id):
-        reviews = Review.objects.filter(cafe_id=cafe_id).order_by("-created_at")
+    def get(self, request, pk):
+        try:
+            cafe = Cafe.objects.get(pk=pk)
+        except Cafe.DoesNotExist:
+            return Response({"error": "Cafe not found"}, status=404)
+
+        reviews = cafe.reviews.all().order_by("-created_at")
 
         paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
         result_page = paginator.paginate_queryset(reviews, request)
 
         serializer = ReviewSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class UserLikedCafesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        cafes = user.cafe_likes.all().order_by("-updated_at")
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
+        result_page = paginator.paginate_queryset(cafes, request)
+        serializer = CafeLikeSerializer(cafes, many=True)
+        return Response(serializer.data)
