@@ -24,7 +24,10 @@
   ./run migrate
   ./run load-dataset
   ```
-
+  Superuser를 생성하고, Google 소셜앱 생성 및 사이트 생성, 연결을 합니다.
+  ```
+  ./run initial_settings
+  ```
 
 ## Git Convention
 
