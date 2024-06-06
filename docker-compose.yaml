@@ -1,23 +1,23 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
+  postgres:
+    image: postgres:16
+    container_name: postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./db:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
       TZ: ${TZ}
     healthcheck:
-      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD']
+      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
       interval: 10s
-      timeout: 2s
-      retries: 100
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   django:
     container_name: django
@@ -30,7 +30,7 @@ services:
     volumes:
       - .:/app
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     env_file:
       - .env
