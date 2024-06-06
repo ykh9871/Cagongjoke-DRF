@@ -1,7 +1,7 @@
 #!/bin/sh
 COMMAND=$1
-SQL_FILE1="tmp/cagong_area_202406030110.sql"
-SQL_FILE2="tmp/cagong_cafe_202406030110.sql"
+SQL_FILE1="tmp/cagong_area_202406061711.sql"
+SQL_FILE2="tmp/cagong_cafe_202406061711.sql"
 
 case $COMMAND in
   makemigrations)
