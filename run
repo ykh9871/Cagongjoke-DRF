@@ -24,7 +24,7 @@ case $COMMAND in
     docker-compose exec django python manage.py link_google_socialapp
     ;;
   *)
-    echo "Usage: $0 {migrate|makemigrations|shell|load-dataset|createsuperuser|update_site|create_google_socialapp}"
+    echo "Usage: $0 {migrate|makemigrations|shell|load-dataset|initial_settings}"
     exit 1
     ;;
 esac
