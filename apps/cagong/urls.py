@@ -21,4 +21,5 @@ urlpatterns = [
     # /cafes/areas/?area_id=11&page=1 형태로 호출할 수 있습니다.
     path("cafes/areas/", CafeListAPIView.as_view(), name="cafe-list"),
     path("cafes/<int:pk>/", CafeDetailAPIView.as_view(), name="cafe-detail"),
+    path("cafes/", CafeCreateAPIView.as_view(), name="cafe-create"),
 ]
