@@ -11,3 +11,10 @@ from apps.cagong.serializers import (
     CafeLikeSerializer,
     ReviewLikeSerializer,
 )
+
+
+# Area 관련 API
+class CityListAPIView(APIView):
+    def get(self, request):
+        areas = Area.objects.values("city_name", "city_code").distinct()
+        return Response(areas)
