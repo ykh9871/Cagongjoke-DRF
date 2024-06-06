@@ -18,3 +18,13 @@ class CityListAPIView(APIView):
     def get(self, request):
         areas = Area.objects.values("city_name", "city_code").distinct()
         return Response(areas)
+
+
+class CountyListAPIView(APIView):
+    def get(self, request, city_code):
+        counties = (
+            Area.objects.filter(city_code=city_code)
+            .values("county_code", "county_name")
+            .distinct()
+        )
+        return Response(counties)
