@@ -144,3 +144,13 @@ class CafeLikeCountAPIView(APIView):
             return Response({"count": count})
         except Cafe.DoesNotExist:
             return Response({"error": "Cafe not found"}, status=404)
+
+
+class CafeReviewCountAPIView(APIView):
+    def get(self, request, pk):
+        try:
+            cafe = Cafe.objects.get(pk=pk)
+            count = cafe.reviews.count()
+            return Response({"count": count})
+        except Cafe.DoesNotExist:
+            return Response({"error": "Cafe not found"}, status=404)
