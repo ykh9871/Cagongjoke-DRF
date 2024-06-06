@@ -34,4 +34,9 @@ urlpatterns = [
         CafeReviewCountAPIView.as_view(),
         name="cafe-review-count",
     ),
+    path(
+        "cafes/<int:cafe_id>/reviews/",
+        CafeReviewListAPIView.as_view(),
+        name="cafe-review-list",
+    ),
 ]

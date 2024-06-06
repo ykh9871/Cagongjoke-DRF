@@ -154,3 +154,14 @@ class CafeReviewCountAPIView(APIView):
             return Response({"count": count})
         except Cafe.DoesNotExist:
             return Response({"error": "Cafe not found"}, status=404)
+
+
+class CafeReviewListAPIView(APIView):
+    def get(self, request, cafe_id):
+        reviews = Review.objects.filter(cafe_id=cafe_id).order_by("-created_at")
+
+        paginator = PageNumberPagination()
+        result_page = paginator.paginate_queryset(reviews, request)
+
+        serializer = ReviewSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
