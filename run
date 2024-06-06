@@ -26,8 +26,12 @@ case $COMMAND in
   update_site)
     docker-compose exec django python manage.py update_site
     ;;
+  create_google_socialapp)
+    docker-compose exec django python manage.py create_google_socialapp
+    docker-compose exec django python manage.py link_google_socialapp
+    ;;
   *)
-    echo "Usage: $0 {migrate|makemigrations|shell|load-dataset}"
+    echo "Usage: $0 {migrate|makemigrations|shell|load-dataset|createsuperuser|update_site|create_google_socialapp}"
     exit 1
     ;;
 esac
