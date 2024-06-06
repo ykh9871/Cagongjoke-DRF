@@ -14,11 +14,8 @@ case $COMMAND in
     docker-compose exec django python manage.py shell
     ;;
   load-dataset)
-    docker cp $SQL_FILE1 postgres:/$SQL_FILE1
-    docker cp $SQL_FILE2 postgres:/$SQL_FILE2
-    docker-compose exec postgres sh -c "PGPASSWORD='$POSTGRES_PASSWORD' psql -U $POSTGRES_USER -d $POSTGRES_DB -f $SQL_FILE1"
-    docker-compose exec postgres sh -c "PGPASSWORD='$POSTGRES_PASSWORD' psql -U $POSTGRES_USER -d $POSTGRES_DB -f $SQL_FILE2"
-    docker-compose exec postgres sh -c "rm $SQL_FILE1 $SQL_FILE2"
+    docker exec -it django python manage.py crawlareas
+    docker exec -it django python manage.py crawlcafes
     ;;
   initial_settings)
     docker-compose exec django python manage.py createsuperuser_with_password --username cagong --email cagong@naver.com --password cagong1234
