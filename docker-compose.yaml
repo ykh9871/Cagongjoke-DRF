@@ -28,9 +28,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - django_volume:/app
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
       - .env
+
+volumes:
+  django_volume: .
