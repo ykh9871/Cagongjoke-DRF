@@ -26,7 +26,7 @@ class Cafe(SoftDeleteModel):
         Area, on_delete=models.CASCADE, related_name="cafes"
     )  # 지역과 1:N 관계
     addr = models.CharField(max_length=200)
-    kagong = models.BooleanField(default=False)  # 가공 여부
+    cagong = models.BooleanField(default=False)  # 가공 여부
     phone = models.CharField(
         max_length=20,
         null=True,
