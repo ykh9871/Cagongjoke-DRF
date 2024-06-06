@@ -35,7 +35,6 @@ class Command(BaseCommand):
         logger.info(f"#### Start to load..")
         with transaction.atomic():
             for _, row in df.iterrows():
-                print(row["id"])
                 obj, created = Area.objects.update_or_create(
                     id=row["id"],
                     defaults={
