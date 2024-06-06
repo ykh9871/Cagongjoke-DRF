@@ -16,7 +16,11 @@ from apps.cagong.serializers import (
 # Area 관련 API
 class CityListAPIView(APIView):
     def get(self, request):
-        areas = Area.objects.values("city_name", "city_code").distinct()
+        areas = (
+            Area.objects.values("city_name", "city_code")
+            .distinct()
+            .order_by("city_code")
+        )
         return Response(areas)
 
 
@@ -26,6 +30,7 @@ class CountyListAPIView(APIView):
             Area.objects.filter(city_code=city_code)
             .values("county_code", "county_name")
             .distinct()
+            .order_by("county_code")
         )
         return Response(counties)
 
@@ -36,6 +41,7 @@ class TownListAPIView(APIView):
             Area.objects.filter(county_code=county_code)
             .values("town_code", "town_name")
             .distinct()
+            .order_by("town_code")
         )
         return Response(towns)
 
