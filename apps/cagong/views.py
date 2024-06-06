@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from apps.cagong.models import Area, Cafe, Review, CafeLike, ReviewLike
 from apps.cagong.serializers import (
@@ -76,3 +77,23 @@ class AreaDeleteAPIView(APIView):
         area = Area.objects.get(pk=pk)
         area.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Cafe 관련 API
+class CafeListAPIView(APIView):
+    def get(self, request):
+        area_id = request.query_params.get("area_id", None)
+
+        if area_id:
+            cafes = Cafe.objects.filter(area__id__startswith=area_id).order_by(
+                "-cagong"
+            )
+        else:
+            cafes = Cafe.objects.all().order_by("-cagong")
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 10으로 설정
+        result_page = paginator.paginate_queryset(cafes, request)
+
+        serializer = CafeSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
