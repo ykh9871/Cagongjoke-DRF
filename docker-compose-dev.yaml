@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - /media/hongyongjae/Database/cagongjoke/home/cagongjoke/workspace/Cagongjoke-DRF/db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+    restart: unless-stopped
+
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: tail -f /dev/null
+    ports:
+      - "8000:8000"
+    volumes:
+      - /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
