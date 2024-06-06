@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
+from apps.users.models import User
 from apps.cagong.models import Area, Cafe, Review, CafeLike, ReviewLike
 from apps.cagong.serializers import (
     AreaSerializer,
@@ -103,4 +104,85 @@ class CafeDetailAPIView(APIView):
     def get(self, request, pk):
         cafe = Cafe.objects.get(pk=pk)
         serializer = CafeSerializer(cafe)
+        return Response(serializer.data)
+
+
+class CafeCreateAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        serializer = CafeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CafeUpdateAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        cafe = Cafe.objects.get(pk=pk)
+        serializer = CafeSerializer(cafe, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CafeDeleteAPIView(APIView):
+    def delete(self, request, pk):
+        cafe = Cafe.objects.get(pk=pk)
+        cafe.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CafeLikeCountAPIView(APIView):
+    def get(self, request, pk):
+        try:
+            cafe = Cafe.objects.get(pk=pk)
+            count = cafe.likes.count()
+            return Response({"count": count})
+        except Cafe.DoesNotExist:
+            return Response({"error": "Cafe not found"}, status=404)
+
+
+class CafeReviewCountAPIView(APIView):
+    def get(self, request, pk):
+        try:
+            cafe = Cafe.objects.get(pk=pk)
+            count = cafe.reviews.count()
+            return Response({"count": count})
+        except Cafe.DoesNotExist:
+            return Response({"error": "Cafe not found"}, status=404)
+
+
+class CafeReviewListAPIView(APIView):
+    def get(self, request, pk):
+        try:
+            cafe = Cafe.objects.get(pk=pk)
+        except Cafe.DoesNotExist:
+            return Response({"error": "Cafe not found"}, status=404)
+
+        reviews = cafe.reviews.all().order_by("-created_at")
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
+        result_page = paginator.paginate_queryset(reviews, request)
+
+        serializer = ReviewSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class UserLikedCafesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = User.objects.get(pk=request.user.id)
+        cafes = user.cafe_likes.all().order_by("-updated_at")
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
+        result_page = paginator.paginate_queryset(cafes, request)
+        serializer = CafeLikeSerializer(cafes, many=True)
         return Response(serializer.data)
