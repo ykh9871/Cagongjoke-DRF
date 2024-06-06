@@ -1,38 +1,18 @@
 from django.urls import path
-from apps.cagong.views import (
-    AreaListCreateAPIView,
-    AreaDetailAPIView,
-    CafeListCreateAPIView,
-    CafeDetailAPIView,
-    ReviewListCreateAPIView,
-    ReviewDetailAPIView,
-    CafeLikeListCreateAPIView,
-    CafeLikeDetailAPIView,
-    ReviewLikeListCreateAPIView,
-    ReviewLikeDetailAPIView,
-)
+from .views import *
 
 urlpatterns = [
-    path("areas/", AreaListCreateAPIView.as_view(), name="area-list-create"),
-    path("areas/<int:pk>/", AreaDetailAPIView.as_view(), name="area-detail"),
-    path("cafes/", CafeListCreateAPIView.as_view(), name="cafe-list-create"),
-    path("cafes/<int:pk>/", CafeDetailAPIView.as_view(), name="cafe-detail"),
-    path("reviews/", ReviewListCreateAPIView.as_view(), name="review-list-create"),
-    path("reviews/<int:pk>/", ReviewDetailAPIView.as_view(), name="review-detail"),
+    # Area 관련 API
+    path("areas/cities/", CityListAPIView.as_view(), name="city-name-list"),
     path(
-        "cafe-likes/", CafeLikeListCreateAPIView.as_view(), name="cafe-like-list-create"
+        "areas/cities/<int:city_code>/counties/",
+        CountyListAPIView.as_view(),
+        name="county-name-list",
     ),
     path(
-        "cafe-likes/<int:pk>/", CafeLikeDetailAPIView.as_view(), name="cafe-like-detail"
+        "areas/counties/<int:county_code>/towns/",
+        TownListAPIView.as_view(),
+        name="town-name-list",
     ),
-    path(
-        "review-likes/",
-        ReviewLikeListCreateAPIView.as_view(),
-        name="review-like-list-create",
-    ),
-    path(
-        "review-likes/<int:pk>/",
-        ReviewLikeDetailAPIView.as_view(),
-        name="review-like-detail",
-    ),
+    path("areas/", AreaCreateAPIView.as_view(), name="area-create"),
 ]
