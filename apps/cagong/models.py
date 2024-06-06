@@ -55,27 +55,25 @@ class Review(SoftDeleteModel):
         return f"{self.cafe.name}카페의 리뷰"
 
 
-class CafeLike(models.Model):
+class CafeLike(SoftDeleteModel):
     cafe = models.ForeignKey(
         Cafe, on_delete=models.CASCADE, related_name="likes"
     )  # 카페와 N:N 관계
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="cafe_likes"
     )  # 사용자와 N:N 관계
-    liked_at = models.DateTimeField(auto_now_add=True)  # 좋아요 시간 기록
 
     def __str__(self):
         return f"{self.user.email} likes {self.cafe.name}"
 
 
-class ReviewLike(models.Model):
+class ReviewLike(SoftDeleteModel):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name="likes"
     )  # 리뷰와 N:N 관계
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="review_likes"
     )  # 사용자와 N:N 관계
-    liked_at = models.DateTimeField(auto_now_add=True)  # 좋아요 시간 기록
 
     def __str__(self):
         return f"{self.user.email} likes a review of {self.review.cafe.name}"
