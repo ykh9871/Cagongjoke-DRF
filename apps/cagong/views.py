@@ -127,3 +127,10 @@ class CafeUpdateAPIView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CafeDeleteAPIView(APIView):
+    def delete(self, request, pk):
+        cafe = Cafe.objects.get(pk=pk)
+        cafe.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
