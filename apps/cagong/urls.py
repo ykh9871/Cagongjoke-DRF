@@ -24,4 +24,9 @@ urlpatterns = [
     path("cafes/", CafeCreateAPIView.as_view(), name="cafe-create"),
     path("cafes/<int:pk>/", CafeUpdateAPIView.as_view(), name="cafe-update"),
     path("cafes/<int:pk>/", CafeDeleteAPIView.as_view(), name="cafe-delete"),
+    path(
+        "cafes/<int:pk>/like-count/",
+        CafeLikeCountAPIView.as_view(),
+        name="cafe-like-count",
+    ),
 ]

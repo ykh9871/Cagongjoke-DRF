@@ -134,3 +134,13 @@ class CafeDeleteAPIView(APIView):
         cafe = Cafe.objects.get(pk=pk)
         cafe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CafeLikeCountAPIView(APIView):
+    def get(self, request, pk):
+        try:
+            cafe = Cafe.objects.get(pk=pk)
+            count = cafe.likes.count()
+            return Response({"count": count})
+        except Cafe.DoesNotExist:
+            return Response({"error": "Cafe not found"}, status=404)
