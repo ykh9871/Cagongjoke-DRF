@@ -61,3 +61,12 @@ class AreaUpdateAPIView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AreaDeleteAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def delete(self, request, pk):
+        area = Area.objects.get(pk=pk)
+        area.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
