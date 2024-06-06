@@ -21,7 +21,12 @@ class Command(BaseCommand):
     def extract_process(self):
         logger.info("#### Start to extract, process data")
         df = get_dataframe_from_s3(bucket, file_key)
-        df["id"] = df["city_code"] + df["county_code"] + df["town_code"]
+        df["id"] = (
+            df["city_code"].astype(str)
+            + df["county_code"].astype(str)
+            + df["town_code"].astype(str)
+        ).astype(int)
+
         df["county_name"] = df["county_name"].fillna("")
         logger.info("#### Success to process data")
         return df
@@ -30,9 +35,11 @@ class Command(BaseCommand):
         logger.info(f"#### Start to load..")
         with transaction.atomic():
             for _, row in df.iterrows():
+                print(row["id"])
                 obj, created = Area.objects.update_or_create(
                     id=row["id"],
                     defaults={
+                        "id": row["id"],
                         "city_code": row["city_code"],
                         "city_name": row["city_name"],
                         "county_code": row["county_code"],
