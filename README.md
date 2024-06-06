@@ -14,8 +14,7 @@
 
 2. 도커
   ```
-  docker-compose -f docker-compose.yaml up --build
-  docker compose up -d
+  docker compose up --build -d
   ```
 
 3. 초기 로컬 세팅
