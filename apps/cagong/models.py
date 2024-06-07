@@ -5,13 +5,20 @@ from common.models import SoftDeleteModel
 
 class Area(SoftDeleteModel):
     id = models.IntegerField(primary_key=True)  # 지역 코드를 기본 키로 사용
-    city_code = models.IntegerField()
+    city_code = models.IntegerField(db_index=True)
     city_name = models.CharField(max_length=100)
-    county_code = models.IntegerField()
+    county_code = models.IntegerField(db_index=True)
     county_name = models.CharField(max_length=100)
-    town_code = models.IntegerField()
+    town_code = models.IntegerField(db_index=True)
     town_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["city_code"]),
+            models.Index(fields=["county_code"]),
+            models.Index(fields=["town_code"]),
+        ]
 
     def __str__(self):
         return f"{self.city_name} {self.county_name} {self.town_name}"
