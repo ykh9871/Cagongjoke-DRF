@@ -40,7 +40,7 @@ urlpatterns = [
         name="cafe-review-list",
     ),
     path(
-        "users/cafes/likes/",
+        "users/liked_cafes/",
         UserLikedCafesAPIView.as_view(),
         name="user-liked-cafes",
     ),
