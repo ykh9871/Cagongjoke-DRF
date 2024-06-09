@@ -194,7 +194,7 @@ class UserLikedCafesAPIView(APIView):
 class UserReviewsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, user_id):
+    def get(self, request):
         user = request.user
         reviews = user.reviews.all().order_by("-updated_at")
         paginator = PageNumberPagination()
@@ -259,3 +259,15 @@ class ReviewDeleteAPIView(APIView):
             {"detail": "You do not have permission."},
             status=status.HTTP_404_BAD_REQUEST,
         )
+
+
+# CafeLike 관련 API
+class CafeLikeCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = CafeLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
