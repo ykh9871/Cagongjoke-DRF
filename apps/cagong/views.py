@@ -131,6 +131,8 @@ class CafeUpdateAPIView(APIView):
 
 
 class CafeDeleteAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
     def delete(self, request, pk):
         cafe = Cafe.objects.get(pk=pk)
         cafe.delete()
@@ -184,5 +186,5 @@ class UserLikedCafesAPIView(APIView):
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
         result_page = paginator.paginate_queryset(cafes, request)
-        serializer = CafeLikeSerializer(cafes, many=True)
-        return Response(serializer.data)
+        serializer = CafeLikeSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
