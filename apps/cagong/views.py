@@ -280,3 +280,15 @@ class CafeLikeDeleteAPIView(APIView):
         like = CafeLike.objects.get(pk=pk)
         like.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# ReviewLike 관련 API
+class ReviewLikeCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ReviewLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

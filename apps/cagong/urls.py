@@ -61,4 +61,8 @@ urlpatterns = [
         CafeLikeDeleteAPIView.as_view(),
         name="cafe-like-delete",
     ),
+    # ReviewLike 관련 API
+    path(
+        "reviews/likes/", ReviewLikeCreateAPIView.as_view(), name="review-like-create"
+    ),
 ]
