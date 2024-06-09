@@ -180,7 +180,7 @@ class UserLikedCafesAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = User.objects.get(pk=request.user.id)
+        user = request.user
         cafes = user.cafe_likes.all().order_by("-updated_at")
 
         paginator = PageNumberPagination()
@@ -188,3 +188,17 @@ class UserLikedCafesAPIView(APIView):
         result_page = paginator.paginate_queryset(cafes, request)
         serializer = CafeLikeSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+# Review 관련 API
+class UserReviewsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = request.user
+        reviews = user.reviews.all().order_by("-updated_at")
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
+        result_page = paginator.paginate_queryset(reviews, request)
+        serializer = ReviewSerializer(result_page, many=True)
+        return Response(serializer.data)

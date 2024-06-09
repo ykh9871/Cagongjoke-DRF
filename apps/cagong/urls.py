@@ -44,4 +44,6 @@ urlpatterns = [
         UserLikedCafesAPIView.as_view(),
         name="user-liked-cafes",
     ),
+    # Review 관련 API
+    path("users/reviews/", UserReviewsAPIView.as_view(), name="user-reviews"),
 ]
