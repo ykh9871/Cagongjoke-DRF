@@ -292,3 +292,12 @@ class ReviewLikeCreateAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewLikeDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        like = ReviewLike.objects.get(pk=pk)
+        like.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
