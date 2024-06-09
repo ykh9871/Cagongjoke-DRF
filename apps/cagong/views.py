@@ -240,4 +240,22 @@ class ReviewUpdateAPIView(APIView):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"detail": "You do not have permission."},
+            status=status.HTTP_404_BAD_REQUEST,
+        )
+
+
+class ReviewDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = request.user
+        review = Review.objects.get(pk=pk)
+        if review.user_id == user.id:
+            review.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"detail": "You do not have permission."},
+            status=status.HTTP_404_BAD_REQUEST,
+        )

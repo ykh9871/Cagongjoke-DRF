@@ -53,4 +53,5 @@ urlpatterns = [
     ),
     path("reviews/", ReviewCreateAPIView.as_view(), name="review-create"),
     path("reviews/<int:pk>/", ReviewUpdateAPIView.as_view(), name="review-update"),
+    path("reviews/<int:pk>/", ReviewDeleteAPIView.as_view(), name="review-delete"),
 ]
