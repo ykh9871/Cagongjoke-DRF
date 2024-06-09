@@ -51,4 +51,5 @@ urlpatterns = [
         UserLikedReviewsAPIView.as_view(),
         name="user-liked-reviews",
     ),
+    path("reviews/", ReviewCreateAPIView.as_view(), name="review-create"),
 ]

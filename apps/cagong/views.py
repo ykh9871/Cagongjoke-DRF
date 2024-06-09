@@ -207,7 +207,7 @@ class UserReviewsAPIView(APIView):
 class UserLikedReviewsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, user_id):
+    def get(self, request):
         user = request.user
         likes = user.review_likes.all().order_by("-updated_at")
         paginator = PageNumberPagination()
@@ -215,3 +215,14 @@ class UserLikedReviewsAPIView(APIView):
         result_page = paginator.paginate_queryset(likes, request)
         serializer = ReviewLikeSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+class ReviewCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
