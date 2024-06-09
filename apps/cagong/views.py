@@ -201,4 +201,17 @@ class UserReviewsAPIView(APIView):
         paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
         result_page = paginator.paginate_queryset(reviews, request)
         serializer = ReviewSerializer(result_page, many=True)
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class UserLikedReviewsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = request.user
+        likes = user.review_likes.all().order_by("-updated_at")
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
+        result_page = paginator.paginate_queryset(likes, request)
+        serializer = ReviewLikeSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)

@@ -46,4 +46,9 @@ urlpatterns = [
     ),
     # Review 관련 API
     path("users/reviews/", UserReviewsAPIView.as_view(), name="user-reviews"),
+    path(
+        "users/liked_reviews/",
+        UserLikedReviewsAPIView.as_view(),
+        name="user-liked-reviews",
+    ),
 ]
