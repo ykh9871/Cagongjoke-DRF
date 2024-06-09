@@ -28,7 +28,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - /app
+      - /media/hongyongjae/Database/cagongjoke/home/cagongjoke/workspace/Cagongjoke-DRF:/app
     depends_on:
       postgres:
         condition: service_healthy
