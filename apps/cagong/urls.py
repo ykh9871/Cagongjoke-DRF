@@ -56,4 +56,9 @@ urlpatterns = [
     path("reviews/<int:pk>/", ReviewDeleteAPIView.as_view(), name="review-delete"),
     # CafeLike 관련 API
     path("cafes/likes/", CafeLikeCreateAPIView.as_view(), name="cafe-like-create"),
+    path(
+        "cafes/likes/<int:pk>/",
+        CafeLikeDeleteAPIView.as_view(),
+        name="cafe-like-delete",
+    ),
 ]
