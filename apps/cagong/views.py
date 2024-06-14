@@ -121,11 +121,9 @@ class CafeListAPIView(APIView):
         area_id = request.query_params.get("area_id", None)
 
         if area_id:
-            cafes = Cafe.objects.filter(area__id__startswith=area_id).order_by(
-                "-cagong"
-            )
+            cafes = Cafe.objects.filter(area__id=area_id).order_by("-cagong", "id")
         else:
-            cafes = Cafe.objects.all().order_by("-cagong")
+            cafes = Cafe.objects.all().order_by("-cagong", "id")
 
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 10으로 설정
