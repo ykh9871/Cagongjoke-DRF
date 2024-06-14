@@ -143,10 +143,9 @@ CORS_ALLOW_HEADERS = [  # 허용할 헤더
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://127.0.0.1:4300",
+    "http://localhost:4300",
+    "https://ohmolli.com:4300",
 ]
 
 MIDDLEWARE = [
