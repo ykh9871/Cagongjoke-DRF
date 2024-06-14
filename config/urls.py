@@ -1,8 +1,21 @@
 from django.contrib import admin
-from drf_yasg.views import get_schema_view
 from django.urls import path, re_path, include
 from rest_framework import permissions
+from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.generators import OpenAPISchemaGenerator
+
+
+class CustomOpenAPISchemaGenerator(OpenAPISchemaGenerator):
+    def get_schema(self, request=None, public=False):
+        schema = super().get_schema(request, public)
+        schema.schemes = ["http", "https"]
+        schema.servers = [
+            {"url": "http://localhost:8000/", "description": "Local Server"},
+            {"url": "https://ohmolli.com:8000/", "description": "Dev Server"},
+        ]
+        return schema
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -15,6 +28,7 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    generator_class=CustomOpenAPISchemaGenerator,
 )
 
 urlpatterns = [
