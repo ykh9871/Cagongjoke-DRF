@@ -6,13 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from apps.cagong.models import Area, Cafe, Review, CafeLike, ReviewLike
-from apps.cagong.serializers import (
-    AreaSerializer,
-    CafeSerializer,
-    ReviewSerializer,
-    CafeLikeSerializer,
-    ReviewLikeSerializer,
-)
+from apps.cagong.serializers import *
 
 
 # Area 관련 API
@@ -20,7 +14,7 @@ class CityListAPIView(APIView):
     @swagger_auto_schema(
         operation_summary="시/도 목록 조회",
         operation_description="모든 시/도 목록을 조회합니다.",
-        responses={200: openapi.Response("시/도 목록", AreaSerializer(many=True))},
+        responses={200: openapi.Response("시/도 목록", CityListSerializer(many=True))},
     )
     def get(self, request):
         areas = (
@@ -28,39 +22,43 @@ class CityListAPIView(APIView):
             .distinct()
             .order_by("city_code")
         )
-        return Response(areas)
+        serializer = CityListSerializer(areas, many=True)
+        return Response(serializer.data)
 
 
 class CountyListAPIView(APIView):
     @swagger_auto_schema(
         operation_summary="시군구 목록 조회",
         operation_description="특정 시/도의 모든 시군구 목록을 조회합니다.",
-        responses={200: openapi.Response("시군구 목록", AreaSerializer(many=True))},
+        responses={
+            200: openapi.Response("시군구 목록", CountyListSerializer(many=True))
+        },
     )
     def get(self, request, city_code):
         counties = (
             Area.objects.filter(city_code=city_code)
-            .values("county_code", "county_name")
+            .values("city_code", "county_code", "county_name")
             .distinct()
             .order_by("county_code")
         )
-        return Response(counties)
+        serializer = CountyListSerializer(counties, many=True)
+        return Response(serializer.data)
 
 
 class TownListAPIView(APIView):
     @swagger_auto_schema(
         operation_summary="읍면동 목록 조회",
         operation_description="특정 시군구의 모든 읍면동 목록을 조회합니다.",
-        responses={200: openapi.Response("읍면동 목록", AreaSerializer(many=True))},
+        responses={200: openapi.Response("읍면동 목록", TownListSerializer(many=True))},
     )
-    def get(self, request, county_code):
+    def get(self, request, city_code, county_code):
         towns = (
-            Area.objects.filter(county_code=county_code)
-            .values("town_code", "town_name")
-            .distinct()
+            Area.objects.filter(city_code=city_code, county_code=county_code)
+            .values("id", "town_code", "town_name")
             .order_by("town_code")
         )
-        return Response(towns)
+        serializer = TownListSerializer(towns, many=True)
+        return Response(serializer.data)
 
 
 class AreaCreateAPIView(APIView):

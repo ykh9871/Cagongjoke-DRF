@@ -10,7 +10,7 @@ urlpatterns = [
         name="county-name-list",
     ),
     path(
-        "areas/counties/<int:county_code>/towns/",
+        "areas/counties/<int:city_code>/<int:county_code>/towns/",
         TownListAPIView.as_view(),
         name="town-name-list",
     ),
