@@ -18,7 +18,8 @@ class CityListAPIView(APIView):
     )
     def get(self, request):
         areas = (
-            Area.objects.values("city_name", "city_code")
+            Area.objects.filter(is_active=True)
+            .values("city_name", "city_code")
             .distinct()
             .order_by("city_code")
         )
@@ -36,7 +37,7 @@ class CountyListAPIView(APIView):
     )
     def get(self, request, city_code):
         counties = (
-            Area.objects.filter(city_code=city_code)
+            Area.objects.filter(city_code=city_code, is_active=True)
             .values("city_code", "county_code", "county_name")
             .distinct()
             .order_by("county_code")
@@ -53,7 +54,9 @@ class TownListAPIView(APIView):
     )
     def get(self, request, city_code, county_code):
         towns = (
-            Area.objects.filter(city_code=city_code, county_code=county_code)
+            Area.objects.filter(
+                city_code=city_code, county_code=county_code, is_active=True
+            )
             .values("id", "town_code", "town_name")
             .order_by("town_code")
         )
@@ -121,9 +124,11 @@ class CafeListAPIView(APIView):
         area_id = request.query_params.get("area_id", None)
 
         if area_id:
-            cafes = Cafe.objects.filter(area__id=area_id).order_by("-cagong", "id")
+            cafes = Cafe.objects.filter(area__id=area_id, is_active=True).order_by(
+                "-cagong", "id"
+            )
         else:
-            cafes = Cafe.objects.all().order_by("-cagong", "id")
+            cafes = Cafe.objects.filter(is_active=True).order_by("-cagong", "id")
 
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 10으로 설정
@@ -236,7 +241,7 @@ class CafeReviewCountAPIView(APIView):
     def get(self, request, pk):
         try:
             cafe = Cafe.objects.get(pk=pk)
-            count = cafe.reviews.count()
+            count = cafe.reviews.filter(is_active=True).count()
             return Response({"count": count})
         except Cafe.DoesNotExist:
             return Response({"error": "Cafe not found"}, status=404)
@@ -257,7 +262,7 @@ class CafeReviewListAPIView(APIView):
         except Cafe.DoesNotExist:
             return Response({"error": "Cafe not found"}, status=404)
 
-        reviews = cafe.reviews.all().order_by("-created_at")
+        reviews = cafe.reviews.filter(is_active=True).order_by("-created_at")
 
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
@@ -279,7 +284,7 @@ class UserLikedCafesAPIView(APIView):
     )
     def get(self, request):
         user = request.user
-        cafes = user.cafe_likes.all().order_by("-updated_at")
+        cafes = user.cafe_likes.filter(is_active=True).order_by("-updated_at")
 
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
@@ -301,7 +306,7 @@ class UserReviewsAPIView(APIView):
     )
     def get(self, request):
         user = request.user
-        reviews = user.reviews.all().order_by("-updated_at")
+        reviews = user.reviews.filter(is_active=True).order_by("-updated_at")
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
         result_page = paginator.paginate_queryset(reviews, request)
@@ -321,7 +326,7 @@ class UserLikedReviewsAPIView(APIView):
     )
     def get(self, request):
         user = request.user
-        likes = user.review_likes.all().order_by("-updated_at")
+        likes = user.review_likes.filter(is_active=True).order_by("-updated_at")
         paginator = PageNumberPagination()
         paginator.page_size = 10  # 페이지당 항목 수를 설정합니다.
         result_page = paginator.paginate_queryset(likes, request)
