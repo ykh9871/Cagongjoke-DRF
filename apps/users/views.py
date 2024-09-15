@@ -115,6 +115,14 @@ def google_callback(request):
     try:
         user = User.objects.get(email=email)
         if user.is_active:
+            # 소셜 계정 연결 여부 확인
+            if not SocialAccount.objects.filter(user=user, provider="google").exists():
+                # 소셜 계정이 연결되어 있지 않으면 연결 절차 진행
+                # 여기서 추가 인증을 요구할 수도 있음 (예: 비밀번호 확인)
+                return JsonResponse(
+                    {"message": "계정에 소셜 로그인을 연결하시겠습니까?"}
+                )
+            # 이미 소셜 계정이 연결되어 있으면 바로 로그인 처리
             return create_response(user, "login success")
         else:
             raise Exception("Signup Required")
